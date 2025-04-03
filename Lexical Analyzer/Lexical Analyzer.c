@@ -11,7 +11,7 @@ char nextChar;
 int lexLen;
 int token;
 int nextToken;
-FILE *in_fp, *fopen();
+FILE *in_fp, *out_fp, *fopen();
 
 // Functions
 void addChar();
@@ -37,16 +37,33 @@ int lex();
 
 /**********************************************************************************************/
 /* main driver */
-main() {
-    /* Open the input data file and process its contents */
-    if ((in_fp = fopen("input.txt", "r")) == NULL) {
+int main() {
+    /* Open input file */
+    if ((in_fp = fopen("input2.txt", "r")) == NULL) {
         printf("ERROR - cannot open input file \n");
-    } else {
-        getChar(); // Get the first character
-        do {
-            lex(); // Call the lex function
-        } while (nextToken != EOF); // Continue until EOF is reached
+        return 1;
     }
+
+    /* Open output file */
+    if ((out_fp = fopen("output2.txt", "w")) == NULL) {
+        printf("ERROR - cannot create output file \n");
+        fclose(in_fp);
+        return 1;
+    }
+
+    getChar(); // Get the first character
+
+    do {
+        lex(); // Call the lex function
+    } while (nextToken != EOF); // Continue until EOF is reached
+
+    /* Close files */
+    fclose(in_fp);
+    fclose(out_fp);
+
+    printf("Lexical analysis results written to output.txt\n");
+
+    return 0;
 }
 
 /**********************************************************************************************/
@@ -106,7 +123,7 @@ void addChar() {
 /* getChar - a function to get the next character of input and determine its character class */
 
 void getChar() {
-    if ((nextChar = getc(in_fp)) == EOF) {
+    if ((nextChar = getc(in_fp)) != EOF) {
         if (isalpha(nextChar)) {
             charClass = LETTER;
         } else if (isdigit(nextChar)) {
@@ -171,12 +188,13 @@ int lex() {
             nextToken = EOF;
             lexeme[0] = 'E';
             lexeme[1] = 'O';
-            lexeme[0] = 'F';
+            lexeme[2] = 'F';
             lexeme[3] = 0;
             break;
     }   /* End of switch */
 
-    printf("Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
+    /* Write the result to the output file */
+    fprintf(out_fp, "Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
 
     return nextToken;
 }   /* End of lex */
