@@ -39,5 +39,53 @@ int lex();
 /* main driver */
 main() {
     /* Open the input data file and process its contents */
-    if ((in_fp))
+    if ((in_fp = fopen("input.txt", "r")) == NULL) {
+        printf("ERROR - cannot open input file \n");
+    } else {
+        getChar(); // Get the first character
+        do {
+            lex(); // Call the lex function
+        } while (nextToken != EOF); // Continue until EOF is reached
+    }
+}
+
+/**********************************************************************************************/
+/* lookup - function to lookup operators and parentheses and return the token*/
+
+int lookup(char ch) {
+    switch (ch) {
+        case '(':
+            addChar();
+            nextToken = LEFT_PAREN;
+            break;
+        case ')':
+            addChar();
+            nextToken = RIGHT_PAREN;
+            break;
+        case '+':
+            addChar();
+            nextToken = ADD_OP;
+            break;
+        case '-':
+            addChar();
+            nextToken = SUB_OP;
+            break;
+        case '*':
+            addChar();
+            nextToken = MULT_OP;
+            break;
+        case '/':
+            addChar();
+            nextToken = DIV_OP;
+            break;
+        case '=':
+            addChar();
+            nextToken = ASSIGN_OP;
+            break;
+        default:
+            addChar();
+            nextToken = EOF;
+            break;
+    }
+    return nextToken;
 }
