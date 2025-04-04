@@ -2,29 +2,49 @@
 #include<ctype.h>
 #include<string.h>
 
+/**********************************************************************************************/
+/* 
+ * CS 382 Lexical Analyzer - Project Documentation
+ * 
+ * Grammar (BNF Form) for Lexical Analysis:
+ * <letter>         ::= a | b | ... | z | A | B | ... | Z
+ * <digit>          ::= 0 | 1 | ... | 9
+ * <identifier>     ::= <letter> {<letter> | <digit>}
+ * <int_literal>    ::= <digit> {<digit>}
+ * <add_op>         ::= + | -
+ * <mult_op>        ::= * | /
+ * <assign_op>      ::= =
+ * <lparen>         ::= (
+ * <rparen>         ::= )
+ * <token>          ::= <identifier> | <int_literal> | <add_op> | <mult_op> | <assign_op> | <lparen> | <rparen>
+ *
+ * This is BNF (Backus-Naur Form) since it uses recursive reasoning.
+ */
+/**********************************************************************************************/
+
 /* Global declarations for variables and functions */
 
-// Variables
-int charClass;
-char lexeme[100];
-char nextChar;
-int lexLen;
-int token;
-int nextToken;
-FILE *in_fp, *out_fp, *fopen();
+// Variables (Documenting data structures and roles per rubric)
+int charClass;            // Character class of nextChar: LETTER, DIGIT, or UNKNOWN
+char lexeme[100];         // Stores the current lexeme
+char nextChar;            // Holds the next character read from input
+int lexLen;               // Current length of lexeme
+int token;                // Placeholder (unused here)
+int nextToken;            // Token type of current lexeme
+FILE *in_fp, *out_fp, *fopen(); // File pointers
 
-// Functions
-void addChar();
-void getChar();
-void getNonBlank();
-int lex();
+// Functions 
+void addChar();           // Adds nextChar to lexeme
+void getChar();           // Gets the next char and classifies it
+void getNonBlank();       // Skips whitespace
+int lex();                // Lexical analyzer function
 
-// Classes
+// Classes (following naming conventions for constants)
 #define LETTER 0
 #define DIGIT 1
 #define UNKNOWN 99
 
-// Token Codes
+// Token Codes (following all-caps convention per C standard and rubric)
 #define INT_LIT 10
 #define IDENT 11
 #define ASSIGN_OP 20
@@ -37,6 +57,7 @@ int lex();
 
 /**********************************************************************************************/
 /* main driver */
+
 int main() {
     /* Open input file */
     if ((in_fp = fopen("input2.txt", "r")) == NULL) {
@@ -53,6 +74,7 @@ int main() {
 
     getChar(); // Get the first character
 
+    // Main lexical analyzer loop
     do {
         lex(); // Call the lex function
     } while (nextToken != EOF); // Continue until EOF is reached
@@ -67,7 +89,11 @@ int main() {
 }
 
 /**********************************************************************************************/
-/* lookup - function to lookup operators and parentheses and return the token*/
+/* 
+ * Function: lookup(char ch)
+ * Purpose: Lookup operators and parentheses.
+ * Grammar Rule Applied: <add_op> | <mult_op> | <assign_op> | <lparen> | <rparen>
+ */
 
 int lookup(char ch) {
     switch (ch) {
@@ -108,8 +134,12 @@ int lookup(char ch) {
 }
 
 /**********************************************************************************************/
+/*
+ * Function: addChar()
+ * Purpose: Add the current character to lexeme
+ * Grammar Usage: Supports building <identifier> and <int_literal>
+ */
 
-/* addChar() - a function to add nextChar to lexeme */
 void addChar() {
     if (lexLen <= 98) {
         lexeme[lexLen++] = nextChar;
@@ -120,7 +150,11 @@ void addChar() {
 }
 
 /**********************************************************************************************/
-/* getChar - a function to get the next character of input and determine its character class */
+/*
+ * Function: getChar()
+ * Purpose: Read next character and determine its class
+ * Grammar Mapping: Determines if it could start a <letter>, <digit>, or <unknown>
+ */
 
 void getChar() {
     if ((nextChar = getc(in_fp)) != EOF) {
@@ -137,8 +171,11 @@ void getChar() {
 }
 
 /**********************************************************************************************/
-
-/* getNonBlank - a function to call getChar until it returns a non-whitespace character */
+/*
+ * Function: getNonBlank()
+ * Purpose: Skip whitespace
+ * Grammar Relevance: Not tied to a specific rule, but ensures tokens are properly delimited
+ */
 
 void getNonBlank() {
     while (isspace(nextChar)) {
@@ -149,7 +186,14 @@ void getNonBlank() {
 }
 
 /**********************************************************************************************/
-/* lex - a simple lexical analyzer for arithmetic expressions */
+/*
+ * Function: lex()
+ * Purpose: The core lexical analyzer
+ * Grammar Mapping:
+ *   - <identifier> ::= <letter> {<letter> | <digit>}
+ *   - <int_literal> ::= <digit> {<digit>}
+ *   - <token> ::= operators/parentheses/etc.
+ */
 
 int lex() {
     lexLen = 0;
