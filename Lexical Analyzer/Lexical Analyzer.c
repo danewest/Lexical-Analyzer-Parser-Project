@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include<ctype.h>
 #include<string.h>
+#include "../lexicalAnalyzer.h"
 
 /* Global declarations for variables and functions */
 
@@ -39,14 +40,20 @@ int lex();
 /* main driver */
 int main() {
     /* Open input file */
-    if ((in_fp = fopen("input2.txt", "r")) == NULL) {
+    if ((in_fp = fopen("input.txt", "r")) == NULL) {
         printf("ERROR - cannot open input file \n");
         return 1;
     }
 
     /* Open output file */
-    if ((out_fp = fopen("output2.txt", "w")) == NULL) {
+    if ((out_fp = fopen("output.txt", "w")) == NULL) {
         printf("ERROR - cannot create output file \n");
+        fclose(in_fp);
+        return 1;
+    }
+
+    if ((out_fp = fopen("Parser/tokens.txt", "w")) == NULL) { // In main()
+        printf("ERROR - cannot create tokens.txt \n");
         fclose(in_fp);
         return 1;
     }
@@ -61,7 +68,7 @@ int main() {
     fclose(in_fp);
     fclose(out_fp);
 
-    printf("Lexical analysis results written to output.txt\n");
+    printf("Results written to output.txt\n");
 
     return 0;
 }
@@ -194,7 +201,8 @@ int lex() {
     }   /* End of switch */
 
     /* Write the result to the output file */
-    fprintf(out_fp, "Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
+    //fprintf(out_fp, "Next token is: %d, Next lexeme is %s\n", nextToken, lexeme);
+    fprintf(out_fp, "%d %s\n", nextToken, lexeme); // In lex()
 
     return nextToken;
 }   /* End of lex */
